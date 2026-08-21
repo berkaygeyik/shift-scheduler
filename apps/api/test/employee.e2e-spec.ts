@@ -21,6 +21,8 @@ describe('Employee (e2e)', () => {
   let branchId: string;
   let employeeId: string;
   let otherManagerId: string;
+  let templateId: string;
+  const WEEK_START = '2026-03-02';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -67,8 +69,14 @@ describe('Employee (e2e)', () => {
   });
 
   afterAll(async () => {
+    if (branchId) {
+      await prisma.shiftAssignment.deleteMany({ where: { branchId } });
+    }
     if (employeeId) {
       await prisma.employee.delete({ where: { id: employeeId } }).catch(() => undefined);
+    }
+    if (templateId) {
+      await prisma.shiftTemplate.delete({ where: { id: templateId } }).catch(() => undefined);
     }
     if (branchId) {
       await prisma.branch.delete({ where: { id: branchId } }).catch(() => undefined);
@@ -133,6 +141,48 @@ describe('Employee (e2e)', () => {
       .set('Authorization', `Bearer ${otherToken}`)
       .send({ phone: '5559999999' })
       .expect(403);
+  });
+
+  it('reports actual vs target shifts for a week when weekStart is provided', async () => {
+    await request(app.getHttpServer())
+      .patch(`/employees/${employeeId}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ targetShiftsPerWeek: 3 })
+      .expect(200);
+
+    const template = await request(app.getHttpServer())
+      .post(`/branches/${branchId}/shift-templates`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Sabah', startTime: '08:00', endTime: '16:00', requiredStaffCount: 1 })
+      .expect(201);
+    templateId = template.body.id;
+
+    const schedule = await request(app.getHttpServer())
+      .get(`/schedule?branchId=${branchId}&weekStart=${WEEK_START}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+    const mondaySlot = schedule.body.find((a: { dayOfWeek: string }) => a.dayOfWeek === 'MONDAY');
+
+    await request(app.getHttpServer())
+      .patch(`/schedule/assignments/${mondaySlot.id}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ employeeId })
+      .expect(200);
+
+    const withoutWeek = await request(app.getHttpServer())
+      .get(`/employees?branchId=${branchId}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+    const employeeWithoutWeek = withoutWeek.body.find((e: { id: string }) => e.id === employeeId);
+    expect(employeeWithoutWeek.actualShiftsThisWeek).toBeUndefined();
+
+    const withWeek = await request(app.getHttpServer())
+      .get(`/employees?branchId=${branchId}&weekStart=${WEEK_START}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+    const employeeWithWeek = withWeek.body.find((e: { id: string }) => e.id === employeeId);
+    expect(employeeWithWeek.targetShiftsPerWeek).toBe(3);
+    expect(employeeWithWeek.actualShiftsThisWeek).toBe(1);
   });
 
   it('requires a branchId query param to list employees', () => {

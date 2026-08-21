@@ -30,12 +30,32 @@ export class EmployeeService {
     });
   }
 
-  async findAllForBranch(userId: string, branchId: string) {
+  async findAllForBranch(userId: string, branchId: string, weekStart?: string) {
     await this.branchService.assertManagerHasAccess(userId, branchId);
-    return this.prisma.employee.findMany({
+    const employees = await this.prisma.employee.findMany({
       where: { branches: { some: { branchId } } },
       orderBy: { fullName: 'asc' },
     });
+
+    if (!weekStart) {
+      return employees;
+    }
+
+    const counts = await this.prisma.shiftAssignment.groupBy({
+      by: ['employeeId'],
+      where: {
+        branchId,
+        weekStartDate: new Date(weekStart),
+        employeeId: { in: employees.map((e) => e.id) },
+      },
+      _count: { employeeId: true },
+    });
+    const countByEmployeeId = new Map(counts.map((c) => [c.employeeId, c._count.employeeId]));
+
+    return employees.map((employee) => ({
+      ...employee,
+      actualShiftsThisWeek: countByEmployeeId.get(employee.id) ?? 0,
+    }));
   }
 
   async update(userId: string, employeeId: string, dto: UpdateEmployeeDto) {

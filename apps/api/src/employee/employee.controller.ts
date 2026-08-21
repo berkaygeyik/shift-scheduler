@@ -20,7 +20,7 @@ export class EmployeeController {
 
   @Get()
   findAll(@CurrentUser() user: AccessTokenPayload, @Query() query: ListEmployeesDto) {
-    return this.employeeService.findAllForBranch(user.sub, query.branchId);
+    return this.employeeService.findAllForBranch(user.sub, query.branchId, query.weekStart);
   }
 
   @Patch(':id')
