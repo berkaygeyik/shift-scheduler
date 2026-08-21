@@ -1,0 +1,17 @@
+@reference "../index.css";
+
+.wrapper {
+  @apply mx-auto mt-24 flex max-w-md flex-col gap-4 rounded-lg border border-slate-200 p-8 text-center shadow-sm;
+}
+
+.title {
+  @apply text-2xl font-semibold text-slate-900;
+}
+
+.subtitle {
+  @apply text-sm text-slate-500;
+}
+
+.logout {
+  @apply self-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50;
+}
