@@ -7,6 +7,7 @@ import { BranchModule } from './branch/branch.module';
 import { ShiftTemplateModule } from './shift-template/shift-template.module';
 import { EmployeeModule } from './employee/employee.module';
 import { AvailabilityModule } from './availability/availability.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AvailabilityModule } from './availability/availability.module';
     ShiftTemplateModule,
     EmployeeModule,
     AvailabilityModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

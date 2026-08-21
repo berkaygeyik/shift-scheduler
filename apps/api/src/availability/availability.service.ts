@@ -55,7 +55,10 @@ export class AvailabilityService {
 
   async getEffectiveAvailability(userId: string, employeeId: string, weekStart: string) {
     await this.employeeService.assertManagerCanAccessEmployee(userId, employeeId);
+    return this.getEffectiveAvailabilityUnchecked(employeeId, weekStart);
+  }
 
+  async getEffectiveAvailabilityUnchecked(employeeId: string, weekStart: string) {
     const weekStartDate = new Date(weekStart);
 
     const [recurring, overrides] = await Promise.all([
