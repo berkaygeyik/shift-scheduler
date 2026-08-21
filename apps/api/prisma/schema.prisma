@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,160 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  MANAGER
+}
+
+enum EmploymentType {
+  MINIJOB
+  PARTTIME
+  FULLTIME
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum AssignmentCreatedBy {
+  MANUAL
+  AUTO
+}
+
+model Organization {
+  id   String @id @default(cuid())
+  name String
+
+  users     User[]
+  branches  Branch[]
+  employees Employee[]
+}
+
+model User {
+  id             String @id @default(cuid())
+  organizationId String
+  fullName       String
+  email          String @unique
+  passwordHash   String
+  role           Role   @default(MANAGER)
+
+  organization        Organization           @relation(fields: [organizationId], references: [id])
+  branches            UserBranch[]
+  availabilityEntries EmployeeAvailability[]
+}
+
+model UserBranch {
+  userId   String
+  branchId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([userId, branchId])
+}
+
+model Branch {
+  id             String @id @default(cuid())
+  organizationId String
+  name           String
+  timezone       String
+
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  managers         UserBranch[]
+  shiftTemplates   ShiftTemplate[]
+  employees        EmployeeBranch[]
+  shiftAssignments ShiftAssignment[]
+}
+
+model ShiftTemplate {
+  id                 String  @id @default(cuid())
+  branchId           String
+  name               String
+  startTime          String
+  endTime            String
+  requiredStaffCount Int
+  requiresKeyHolder  Boolean @default(false)
+  isOpening          Boolean @default(false)
+  isClosing          Boolean @default(false)
+  active             Boolean @default(true)
+
+  branch       Branch                 @relation(fields: [branchId], references: [id])
+  availability EmployeeAvailability[]
+  assignments  ShiftAssignment[]
+}
+
+model Employee {
+  id                    String         @id @default(cuid())
+  organizationId        String
+  fullName              String
+  phone                 String?
+  employmentType        EmploymentType
+  startDate             DateTime
+  canWorkAlone          Boolean        @default(false)
+  experienceScore       Int            @default(1)
+  isKeyHolder           Boolean        @default(false)
+  targetShiftsPerWeek   Int?
+  isDefaultRosterMember Boolean        @default(true)
+  status                String         @default("active")
+
+  organization Organization           @relation(fields: [organizationId], references: [id])
+  branches     EmployeeBranch[]
+  availability EmployeeAvailability[]
+  assignments  ShiftAssignment[]
+}
+
+model EmployeeBranch {
+  employeeId   String
+  branchId     String
+  isHomeBranch Boolean @default(false)
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([employeeId, branchId])
+}
+
+model EmployeeAvailability {
+  id              String             @id @default(cuid())
+  employeeId      String
+  weekStartDate   DateTime?
+  dayOfWeek       DayOfWeek
+  shiftTemplateId String?
+  status          AvailabilityStatus
+  note            String?
+  enteredByUserId String
+
+  employee      Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  shiftTemplate ShiftTemplate? @relation(fields: [shiftTemplateId], references: [id])
+  enteredBy     User           @relation(fields: [enteredByUserId], references: [id])
+}
+
+model ShiftAssignment {
+  id                  String              @id @default(cuid())
+  branchId            String
+  weekStartDate       DateTime
+  dayOfWeek           DayOfWeek
+  shiftTemplateId     String
+  employeeId          String?
+  isKeyHolderForShift Boolean             @default(false)
+  locked              Boolean             @default(false)
+  needsKeyHandover    Boolean             @default(false)
+  understaffed        Boolean             @default(false)
+  createdBy           AssignmentCreatedBy @default(MANUAL)
+
+  branch        Branch        @relation(fields: [branchId], references: [id])
+  shiftTemplate ShiftTemplate @relation(fields: [shiftTemplateId], references: [id])
+  employee      Employee?     @relation(fields: [employeeId], references: [id])
 }
