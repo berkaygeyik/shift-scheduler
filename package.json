@@ -1,0 +1,17 @@
+{
+  "name": "shift-scheduler",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api start:dev",
+    "build": "pnpm -r build",
+    "test": "pnpm --filter api test"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
