@@ -39,7 +39,7 @@ export class EmployeeService {
   }
 
   async update(userId: string, employeeId: string, dto: UpdateEmployeeDto) {
-    await this.assertAccessForEdit(userId, employeeId);
+    await this.assertManagerCanAccessEmployee(userId, employeeId);
 
     return this.prisma.employee.update({
       where: { id: employeeId },
@@ -76,7 +76,7 @@ export class EmployeeService {
     });
   }
 
-  private async assertAccessForEdit(userId: string, employeeId: string): Promise<void> {
+  async assertManagerCanAccessEmployee(userId: string, employeeId: string): Promise<void> {
     const employee = await this.prisma.employee.findUnique({
       where: { id: employeeId },
       include: { branches: true },
