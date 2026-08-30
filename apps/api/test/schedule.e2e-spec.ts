@@ -21,6 +21,7 @@ describe('Schedule (e2e)', () => {
   let otherToken: string;
   let branchId: string;
   let templateId: string;
+  let secondTemplateId: string;
   let availableEmployeeId: string;
   let unavailableEmployeeId: string;
   let otherManagerId: string;
@@ -234,5 +235,42 @@ describe('Schedule (e2e)', () => {
       (a: { employeeId: string | null }) => a.employeeId === null,
     );
     expect(stillEmpty).toHaveLength(0);
+  });
+
+  it('generates rows for a shift template added after the week grid already exists', async () => {
+    const secondTemplate = await request(app.getHttpServer())
+      .post(`/branches/${branchId}/shift-templates`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Aksam', startTime: '16:00', endTime: '23:00', requiredStaffCount: 1 })
+      .expect(201);
+    secondTemplateId = secondTemplate.body.id;
+
+    const schedule = await request(app.getHttpServer())
+      .get(`/schedule?branchId=${branchId}&weekStart=${WEEK_START}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+
+    const secondTemplateSlots = schedule.body.filter(
+      (a: { shiftTemplateId: string }) => a.shiftTemplateId === secondTemplateId,
+    );
+    expect(secondTemplateSlots).toHaveLength(7);
+  });
+
+  it('generates the extra slot when a template requiredStaffCount is increased after the grid exists', async () => {
+    await request(app.getHttpServer())
+      .patch(`/shift-templates/${secondTemplateId}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ requiredStaffCount: 2 })
+      .expect(200);
+
+    const schedule = await request(app.getHttpServer())
+      .get(`/schedule?branchId=${branchId}&weekStart=${WEEK_START}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+
+    const secondTemplateSlots = schedule.body.filter(
+      (a: { shiftTemplateId: string }) => a.shiftTemplateId === secondTemplateId,
+    );
+    expect(secondTemplateSlots).toHaveLength(14);
   });
 });

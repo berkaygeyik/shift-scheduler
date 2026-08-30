@@ -150,24 +150,32 @@ export class ScheduleService {
   }
 
   private async ensureWeekGenerated(branchId: string, weekStartDate: Date): Promise<void> {
-    const existing = await this.prisma.shiftAssignment.findFirst({
-      where: { branchId, weekStartDate },
-    });
-    if (existing) return;
-
     const templates = await this.prisma.shiftTemplate.findMany({
       where: { branchId, active: true },
     });
 
+    const existingCounts = await this.prisma.shiftAssignment.groupBy({
+      by: ['shiftTemplateId', 'dayOfWeek'],
+      where: { branchId, weekStartDate },
+      _count: { id: true },
+    });
+    const countKey = (shiftTemplateId: string, dayOfWeek: DayOfWeek) =>
+      `${shiftTemplateId}:${dayOfWeek}`;
+    const countByKey = new Map(
+      existingCounts.map((c) => [countKey(c.shiftTemplateId, c.dayOfWeek), c._count.id]),
+    );
+
     const rows = templates.flatMap((template) =>
-      DAY_ORDER.flatMap((dayOfWeek) =>
-        Array.from({ length: template.requiredStaffCount }, () => ({
+      DAY_ORDER.flatMap((dayOfWeek) => {
+        const existingCount = countByKey.get(countKey(template.id, dayOfWeek)) ?? 0;
+        const missing = template.requiredStaffCount - existingCount;
+        return Array.from({ length: Math.max(missing, 0) }, () => ({
           branchId,
           weekStartDate,
           dayOfWeek,
           shiftTemplateId: template.id,
-        })),
-      ),
+        }));
+      }),
     );
 
     if (rows.length > 0) {
