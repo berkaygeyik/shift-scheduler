@@ -1,0 +1,86 @@
+@reference "../index.css";
+
+.table {
+  @apply w-full border-collapse text-sm;
+}
+
+.headerRow {
+  @apply border-b border-slate-200 text-left text-xs font-medium uppercase text-slate-500;
+}
+
+.headerCell {
+  @apply px-3 py-2;
+}
+
+.row {
+  @apply border-b border-slate-100;
+}
+
+.cell {
+  @apply px-3 py-2 text-slate-700;
+}
+
+.badges {
+  @apply flex flex-wrap gap-1;
+}
+
+.badge {
+  @apply rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600;
+}
+
+.inactive {
+  @apply text-slate-400;
+}
+
+.editButton {
+  @apply rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50;
+}
+
+.emptyState {
+  @apply text-sm text-slate-500;
+}
+
+.form {
+  @apply mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-4;
+}
+
+.field {
+  @apply flex flex-col gap-1;
+}
+
+.fieldWide {
+  @apply col-span-2;
+}
+
+.label {
+  @apply text-xs font-medium text-slate-600;
+}
+
+.input,
+.select {
+  @apply rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:border-slate-500 focus:outline-none;
+}
+
+.checkboxField {
+  @apply flex items-center gap-2;
+}
+
+.checkboxLabel {
+  @apply text-xs font-medium text-slate-600;
+}
+
+.formActions {
+  @apply col-span-full flex items-center gap-2;
+}
+
+.submit {
+  @apply rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50;
+}
+
+.cancel {
+  @apply rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50;
+}
+
+.error {
+  @apply col-span-full text-xs text-red-600;
+}

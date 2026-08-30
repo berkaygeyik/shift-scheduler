@@ -1,0 +1,45 @@
+@reference "../index.css";
+
+.wrapper {
+  @apply min-h-screen bg-slate-50;
+}
+
+.header {
+  @apply flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4;
+}
+
+.left {
+  @apply flex items-center gap-6;
+}
+
+.title {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+.nav {
+  @apply flex items-center gap-4;
+}
+
+.navLink {
+  @apply text-sm font-medium text-slate-500 hover:text-slate-900;
+}
+
+.navLinkActive {
+  @apply text-slate-900;
+}
+
+.userInfo {
+  @apply flex items-center gap-4;
+}
+
+.role {
+  @apply text-sm text-slate-500;
+}
+
+.logout {
+  @apply rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50;
+}
+
+.content {
+  @apply p-6;
+}

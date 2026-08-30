@@ -1,0 +1,38 @@
+@reference "../index.css";
+
+.toolbar {
+  @apply mb-4 flex flex-wrap items-end gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm;
+}
+
+.field {
+  @apply flex flex-col gap-1;
+}
+
+.label {
+  @apply text-xs font-medium text-slate-600;
+}
+
+.select,
+.input {
+  @apply rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:border-slate-500 focus:outline-none;
+}
+
+.actions {
+  @apply flex items-center gap-2;
+}
+
+.button {
+  @apply rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50;
+}
+
+.emptyState {
+  @apply text-sm text-slate-500;
+}
+
+.layout {
+  @apply grid grid-cols-1 items-start gap-4 lg:grid-cols-[260px_1fr];
+}
+
+.error {
+  @apply text-xs text-red-600;
+}

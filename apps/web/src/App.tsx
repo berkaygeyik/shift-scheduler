@@ -2,8 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
+import { AppLayout } from './layout/AppLayout';
 import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { BranchesPage } from './pages/BranchesPage';
+import { EmployeesPage } from './pages/EmployeesPage';
+import { SchedulePage } from './pages/SchedulePage';
 
 const queryClient = new QueryClient();
 
@@ -18,10 +21,14 @@ function App() {
               path="/"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <AppLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<SchedulePage />} />
+              <Route path="employees" element={<EmployeesPage />} />
+              <Route path="branches" element={<BranchesPage />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>

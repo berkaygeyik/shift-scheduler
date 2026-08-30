@@ -1,0 +1,101 @@
+@reference "../index.css";
+
+.tableWrapper {
+  @apply overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm;
+}
+
+.table {
+  @apply w-full min-w-[900px] border-collapse text-sm;
+}
+
+.headerRow {
+  @apply border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase text-slate-500;
+}
+
+.headerCell {
+  @apply px-3 py-2;
+}
+
+.weekendHeader {
+  @apply bg-slate-100;
+}
+
+.shiftHeaderCell {
+  @apply px-3 py-2 text-left;
+}
+
+.rowHeader {
+  @apply border-r border-slate-100 bg-white px-3 py-2 align-top text-left text-sm font-medium text-slate-900;
+}
+
+.accent0 {
+  @apply border-l-4 border-l-sky-400;
+}
+
+.accent1 {
+  @apply border-l-4 border-l-amber-400;
+}
+
+.accent2 {
+  @apply border-l-4 border-l-emerald-400;
+}
+
+.accent3 {
+  @apply border-l-4 border-l-fuchsia-400;
+}
+
+.shiftName {
+  @apply block;
+}
+
+.shiftTime {
+  @apply block text-xs font-normal text-slate-500;
+}
+
+.row {
+  @apply border-b border-slate-100;
+}
+
+.cell {
+  @apply min-w-[110px] px-2 py-2 align-top;
+}
+
+.weekendCell {
+  @apply bg-slate-50;
+}
+
+.dropZone {
+  @apply flex min-h-[52px] flex-col justify-center gap-1 rounded-md border border-dashed border-transparent p-1.5 transition;
+}
+
+.dropZoneOver {
+  @apply border-sky-400 bg-sky-50;
+}
+
+.dropZoneEmpty {
+  @apply text-xs text-slate-300;
+}
+
+.assignedRow {
+  @apply flex items-center justify-between gap-1;
+}
+
+.assignedName {
+  @apply text-sm font-medium text-slate-900;
+}
+
+.removeButton {
+  @apply rounded-full px-1 text-xs text-slate-400 hover:bg-slate-200 hover:text-slate-700;
+}
+
+.lockRow {
+  @apply flex items-center gap-1;
+}
+
+.lockLabel {
+  @apply text-xs text-slate-400;
+}
+
+.emptyState {
+  @apply p-6 text-sm text-slate-500;
+}
